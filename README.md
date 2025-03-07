@@ -129,7 +129,8 @@ Below are some key visualizations from the project:
 ---
 
 ## Dashboard and Documentation
-Our interactive dashboard, implemented in [05_Dashboard.ipynb](notebooks/05_Dashboard.ipynb) and the `dashboard.py` script, allows users to dynamically explore portfolio performance under different stress scenarios. The dashboard integrates interactive Plotly graphs and real-time simulation data to provide a comprehensive view of portfolio robustness.
+Our interactive dashboard, implemented in [interactive_dashboard.ipynb](dashboards/interactive_dashboard.ipynb)
+ and the `dashboard.py` script, allows users to dynamically explore portfolio performance under different stress scenarios. The dashboard integrates interactive Plotly graphs and real-time simulation data to provide a comprehensive view of portfolio robustness.
 
 Detailed documentation is provided in the `docs/` folder, which includes the final compiled report in PDF format. This documentation covers theoretical foundations, methodology, implementation details, and extensive experimental results, making it an excellent resource for both academic and professional audiences.
 
@@ -169,28 +170,40 @@ python scripts/dashboard.py
 
 ## Repository Structure
 ```
-portfolio-optimization/
-├── README.md
-├── LICENSE
-├── requirements.txt
-├── setup.py
-├── data/
-│   ├── raw/
-│   └── processed/
-├── notebooks/
-│   ├── 01_Data_Collection.ipynb
-│   ├── 02_Naive_Optimization.ipynb
-│   ├── 03_Bayesian_Optimization.ipynb
-│   ├── 04_Stress_Testing.ipynb
-│   └── 05_Dashboard.ipynb
-├── scripts/
-│   ├── data_collection.py
-│   ├── bayesian_optimization.py
-│   ├── stress_testing.py
-│   ├── visualizations.py
+BAYESIAN_PORTFOLIO_OPTIMIZATION/
+├── dashboards/
+│   ├── interactive_dashboard.ipynb
 │   └── dashboard.py
-├── reports/
-│   └── final_report.pdf
+├── data/
+│   ├── Cleaned Data/
+│   │   └── historical_prices.csv
+│   ├── Raw Data/
+│   │   └── historical_prices.csv
+├── docs/
+│   ├── architecture.md
+│   └── usage.md
+├── models/
+│   ├── .gitkeep
+│   └── bayesian_model.py
+├── notebooks/
+│   ├── 1_data_collection.ipynb
+│   ├── 2_naive_optimization.ipynb
+│   ├── 3_bayesian_optimization.ipynb
+│   ├── 4_stress_testing.ipynb
+│   └── 5_back_Testing.ipynb
+├── scripts/
+│   ├── PortfolioOptimization.py
+│   ├── bayesian_optimization.py
+│   ├── datacollection.py
+│   ├── stress_testing.py
+│   └── visualization.py
+├── .gitignore
+├── environment.yml
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── setup.py
+
 ```
 
 ## Contributing
