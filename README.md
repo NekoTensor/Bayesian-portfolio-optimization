@@ -141,7 +141,7 @@ To run the project, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/portfolio-optimization.git
+   git clone https://github.com/NekoTensor/Bayesian-portfolio-optimization.git
    cd portfolio-optimization
    
 2. **Install Required Packages:**
