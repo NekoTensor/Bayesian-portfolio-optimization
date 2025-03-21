@@ -1,16 +1,16 @@
-# Byte-compiled / optimized / DLL files
+
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
+
 build/
 dist/
 *.egg-info/
 
-# Jupyter Notebook checkpoints
+
 .ipynb_checkpoints/
 
-# Data files (if not needed to be in version control)
+
 data/raw/
 data/processed/
