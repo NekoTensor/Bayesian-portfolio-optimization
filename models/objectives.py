@@ -1,4 +1,4 @@
-# Portfolio weight parameterization and objective functions
+# Portfolio weight parameterization and objective functions.
 from __future__ import annotations
 import numpy as np
 
@@ -36,3 +36,26 @@ def turnover(weights, prev_weights) -> float:
     if prev_weights is None:
         return 0.0
     return float(np.abs(np.asarray(weights) - np.asarray(prev_weights)).sum())
+
+
+def neg_sharpe(weights, mean_returns, cov_matrix, frequency=52, risk_free=0.0,
+               prev_weights=None, cost_bps=0.0, turnover_penalty=0.0) -> float:
+    """Negative annualized Sharpe, net of trading costs.
+
+    `cost_bps` is charged on one-way turnover against `prev_weights` and
+    annualized to match the numerator. `turnover_penalty` is a separate L1
+    regularizer -- not a real cost, just a preference for stable portfolios.
+    Leave at 0 to measure pure net-of-cost performance.
+    """
+    w = np.asarray(weights, dtype=float)
+    ret, vol = portfolio_stats(w, mean_returns, cov_matrix, frequency)
+
+    if vol <= 0:
+        return np.inf
+
+    if prev_weights is not None:
+        tno = float(np.abs(w - np.asarray(prev_weights, dtype=float)).sum())
+        ret -= tno * (cost_bps / 1e4) * frequency
+        ret -= turnover_penalty * tno
+
+    return -(ret - risk_free) / vol
