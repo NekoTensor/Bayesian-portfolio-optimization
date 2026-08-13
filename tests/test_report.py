@@ -161,14 +161,49 @@ def test_macros_agree_with_results() -> None:
 
 
 @pytest.mark.parametrize(
-    "doc", [ROOT / "README.md", ROOT / "docs" / "postmortem.md"]
+    ("doc", "block"),
+    [
+        (ROOT / "README.md", "HIGHLIGHTS"),
+        (ROOT / "README.md", "RESULTS"),
+        (ROOT / "docs" / "postmortem.md", "RESULTS"),
+    ],
 )
-def test_markdown_results_blocks_are_delimited(doc: Path) -> None:
+def test_markdown_generated_blocks_are_delimited(doc: Path, block: str) -> None:
     text = read(doc)
-    assert text.count("<!-- RESULTS:START -->") == 1, f"{doc.name} lost its results marker"
-    assert text.count("<!-- RESULTS:END -->") == 1, f"{doc.name} lost its results marker"
-    body = text.split("<!-- RESULTS:START -->")[1].split("<!-- RESULTS:END -->")[0]
-    assert len(body.strip()) > 200, f"{doc.name} results block is empty -- run the generator"
+    start, end = f"<!-- {block}:START -->", f"<!-- {block}:END -->"
+    assert text.count(start) == 1, f"{doc.name} lost its {block} start marker"
+    assert text.count(end) == 1, f"{doc.name} lost its {block} end marker"
+    body = text.split(start)[1].split(end)[0]
+    assert len(body.strip()) > 200, f"{doc.name} {block} block is empty -- run the generator"
+
+
+def test_readme_states_no_numbers_outside_generated_blocks() -> None:
+    """The README's own guarantee, enforced.
+
+    Performance figures outside a generated region are hand-typed by definition,
+    and hand-typed figures are how the previous version's README came to disagree
+    with its own data. Structural numerals (version floors, years, section counts)
+    are unavoidable, so this targets the shapes performance claims actually take:
+    a Sharpe-like decimal, a percentage, or a bracketed interval.
+    """
+    text = read(ROOT / "README.md")
+    for block in ("HIGHLIGHTS", "RESULTS"):
+        text = re.sub(
+            re.escape(f"<!-- {block}:START -->") + ".*?" + re.escape(f"<!-- {block}:END -->"),
+            "", text, flags=re.DOTALL,
+        )
+    # Strip fenced code (install pins, API examples, the citation block), HTML
+    # tags (badge URLs percent-encode into digit runs), and link targets.
+    text = re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = re.sub(r"\]\([^)]*\)", "]", text)
+    text = re.sub(r"`[^`]*`", "", text)
+
+    suspicious = re.findall(r"(?<![\w.=/-])\d+\.\d{2,}(?![\w.])|\[\d\.\d+, ?\d\.\d+\]", text)
+    assert not suspicious, (
+        f"performance-shaped numbers outside a generated block: {suspicious}. "
+        "Move them into experiments/make_report_tables.py."
+    )
 
 
 def test_generator_is_idempotent(tmp_path: Path) -> None:
