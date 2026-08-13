@@ -1,0 +1,35 @@
+{
+  "generated_utc": "2026-08-12T18:18:30.180920+00:00",
+  "panel": {
+    "assets": [
+      "AMZN",
+      "GE",
+      "GOOGL",
+      "HSY",
+      "MMM",
+      "MSFT",
+      "SHY"
+    ],
+    "start": "2012-01-08",
+    "end": "2023-12-24",
+    "n_periods": 625
+  },
+  "walk_forward": {
+    "train_window": 156,
+    "rebalance_every": 13,
+    "cost_bps": 10.0,
+    "expanding": false,
+    "max_weight": 0.4
+  },
+  "search_budget": {
+    "gp": 60,
+    "convex_restarts": 15
+  },
+  "n_trials_for_dsr": 16,
+  "trial_sr_variance": 0.0005313700271495468,
+  "n_boot": 2999,
+  "oos_periods": 469,
+  "oos_start": "2015-01-04",
+  "oos_end": "2023-12-24",
+  "runtime_seconds": 2082.9
+}

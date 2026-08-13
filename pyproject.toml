@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bayesian-portfolio-optimization"
+version = "1.0.0"
+description = "Does the estimator or the optimiser drive portfolio performance? A walk-forward study."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Amey Kamble", email = "ameyk@kgpian.iitkgp.ac.in" }]
+keywords = ["portfolio-optimization", "bayesian-statistics", "quantitative-finance", "backtesting"]
+
+# Lower bounds are real compatibility floors, not aspirations:
+# numpy 1.24 for the Generator API used throughout, scipy 1.10 for the SLSQP
+# fixes, scikit-optimize 0.10 because earlier releases break against
+# scikit-learn >= 1.5 (np.int deprecation inside the GP surrogate).
+dependencies = [
+    "numpy>=1.24,<3",
+    "pandas>=2.0,<3",
+    "scipy>=1.10,<2",
+    "scikit-learn>=1.3,<2",
+    "scikit-optimize>=0.10,<1",
+    "matplotlib>=3.7,<4",
+]
+
+[project.optional-dependencies]
+data = ["yfinance>=0.2.40"]           # only needed to refresh the price panel
+dashboard = ["plotly>=5.18", "dash>=2.16"]
+dev = ["pytest>=7.4", "pytest-cov>=4.1"]
+
+[project.urls]
+Repository = "https://github.com/NekoTensor/Bayesian-portfolio-optimization"
+
+[tool.setuptools]
+packages = ["portfolio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = ["error::RuntimeWarning"]

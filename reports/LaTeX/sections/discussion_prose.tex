@@ -1,0 +1,62 @@
+% Hand-authored prose; all numbers via macros from generated/macros.tex.
+
+\paragraph{The search method is not where the performance is.} The clean
+comparison in this study is convex optimisation against Gaussian-process
+optimisation: identical objective, identical feasible set, identical data,
+differing only in how the weight space is searched. Replacing the former with the
+latter changed mean Sharpe by \optimiserDelta{}, against a benchmark confidence
+interval spanning \benchCIWidth{} Sharpe units --- an effect an order of magnitude
+smaller than the uncertainty surrounding it, and pointing the wrong way. This
+should not be surprising, and its unsurprisingness
+is the point. Maximising a Sharpe ratio over a budget-constrained box is a small,
+smooth, cheap-to-evaluate problem that sequential quadratic programming solves
+essentially exactly. A global black-box search cannot meaningfully improve on an
+already-solved problem; the most it can do is match it.
+
+Bayesian optimisation earns its reputation in a regime this problem does not
+occupy --- expensive evaluations, no gradients, a rugged surface. Applying it here
+imports the machinery without the conditions that make the machinery pay.
+
+\paragraph{It is, however, measurably worse in a way Sharpe does not show.} Mean
+turnover rose from \convexTurnover{} under convex optimisation to \gpTurnover{}
+under Gaussian-process search --- with no compensating return. The mechanism is
+straightforward: a convex solver returns nearly the same weights when the
+objective barely changes between rebalances, whereas a surrogate-based search
+seeded differently each time does not. The result is portfolio churn that is pure
+cost. At the \costBps{}~bps charged here the drag is modest; at institutional
+scale, with market impact, it would not be. A practitioner choosing between these
+two methods on out-of-sample Sharpe alone would see a coin flip; adding turnover
+makes the choice clear, and it does not favour the more sophisticated method.
+
+\paragraph{The estimator mattered less than expected, for a reason worth stating.}
+Shrinkage estimators exist to control estimation error in $\mu$ and $\Sigma$, and
+that error scales with $N/T$. This panel has $N = \nAssets{}$ assets and
+$T = \trainWindow{}$ training observations, so the sample moments are already
+reasonably well determined and there is comparatively little error for shrinkage
+to remove. The near-equality of the estimator rows is therefore a finding about
+\emph{this regime}, not a general claim that shrinkage does not work --- and it is
+an honest limitation of the design rather than a result to advertise. The
+literature that motivates these estimators \citep{ledoit2004, jorion1986} studies
+universes an order of magnitude larger, where $N/T$ is not small. Testing them
+where they are supposed to bind requires a wider universe, which is the most
+valuable single extension to this work.
+
+\paragraph{Nothing separated from 1/N.} \nBeatingBenchmark{} of \nStrategies{}
+configurations cleared the 5\% threshold against equal weighting. This replicates
+\citet{demiguel2009} on a much smaller scale and with a narrower universe, and it
+carries the same practical implication: the burden of proof lies with the
+optimised policy. The result is not that optimisation is useless --- it is that on
+\oosPeriods{} weekly observations, the sampling variability of a Sharpe ratio
+swamps the differences these methods produce. Statistical power, not portfolio
+theory, is the binding constraint on what this dataset can establish.
+
+\paragraph{What a positive result would have required.} It is worth being explicit
+about what would have changed the conclusion, since a null result is easy to
+produce by accident. A genuine effect would have to survive: the walk-forward
+split; an identical feasible set across arms; equalised search budgets;
+transaction costs charged on drifted turnover; a bootstrap test robust to fat
+tails and serial dependence; and deflation against all \nTrials{} configurations
+tried. The earlier version of this study passed none of these. Restated as an
+absolute Sharpe gap, the effect it claimed is \claimRatio{} times larger in
+magnitude than the like-for-like effect measured here on the same two arms --- and
+carries the opposite sign.

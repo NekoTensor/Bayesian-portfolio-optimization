@@ -1,16 +1,31 @@
-
 __pycache__/
 *.py[cod]
 *$py.class
 
-
 build/
 dist/
 *.egg-info/
-
+.pytest_cache/
+.venv/
+venv/
 
 .ipynb_checkpoints/
 
+# The weekly price panel under data/ is deliberately committed (~170 KB total):
+# it is what makes every number in results/ reproducible offline. Only ad-hoc
+# downloads land in the scratch directory below.
+data/scratch/
 
-data/raw/
-data/processed/
+# Run logs. results/ is committed; the console transcript that produced it is not.
+*.log
+
+# LaTeX build products. The PDF is built in CI, not committed -- a stale committed
+# PDF is exactly how the previous version kept publishing a withdrawn result.
+reports/LaTeX/*.aux
+reports/LaTeX/*.log
+reports/LaTeX/*.out
+reports/LaTeX/*.toc
+reports/LaTeX/*.fls
+reports/LaTeX/*.fdb_latexmk
+reports/LaTeX/*.synctex.gz
+reports/LaTeX/main.pdf
