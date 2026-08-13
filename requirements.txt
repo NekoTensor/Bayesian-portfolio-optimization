@@ -1,10 +1,21 @@
-numpy
-pandas
-scipy
-skopt
-yfinance
-plotly
-dash
-seaborn
-matplotlib
-pymc3
+# Runtime dependencies for reproducing every number in results/.
+#
+# Two corrections against the original file, both of which made it impossible to
+# install: the Bayesian-optimisation package is distributed as `scikit-optimize`
+# (importable as `skopt`), and `pymc3` was listed but never imported anywhere --
+# it has been superseded by `pymc` and does not build on Python 3.10+.
+#
+# Pinned upper bounds because scikit-optimize is sensitive to scikit-learn's
+# internals; see pyproject.toml for the reasoning behind each floor.
+
+numpy>=1.24,<3
+pandas>=2.0,<3
+scipy>=1.10,<2
+scikit-learn>=1.3,<2
+scikit-optimize>=0.10,<1
+matplotlib>=3.7,<4
+
+# Optional -- only to refresh data/ or run the dashboard.
+# yfinance>=0.2.40
+# plotly>=5.18
+# dash>=2.16
