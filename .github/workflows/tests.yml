@@ -1,0 +1,94 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run test suite
+        run: python -m pytest -q
+
+      # The headline result must survive a fresh checkout. A short GP budget
+      # keeps this to a couple of minutes; the committed results/ use 60.
+      - name: Smoke-test the experiment end to end
+        run: python experiments/run_backtest.py --gp-budget 8 --n-boot 199 --outdir /tmp/smoke
+
+      - name: Confirm the experiment produced its outputs
+        run: |
+          test -f /tmp/smoke/metrics.csv
+          test -f /tmp/smoke/significance.csv
+          test -f /tmp/smoke/config.json
+          test -f /tmp/smoke/figures/sharpe_intervals.png
+
+  paper:
+    # The paper's numbers come from results/ via generated .tex files. Building it
+    # here proves the committed PDF can be reproduced from the committed data, and
+    # that no macro, citation or figure reference has gone stale.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Regenerate tables and macros from results/
+        run: python experiments/make_report_tables.py
+
+      - name: Fail if committed documents are stale
+        run: |
+          git diff --exit-code -- README.md docs/postmortem.md reports/LaTeX/generated \
+            || { echo "::error::Committed docs disagree with results/. Run: python experiments/make_report_tables.py"; exit 1; }
+
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
+            texlive-science latexmk
+
+      - name: Build the paper
+        working-directory: reports/LaTeX
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+
+      - name: Fail on unresolved references
+        working-directory: reports/LaTeX
+        run: |
+          if grep -qE '\?\?|Citation .* undefined' main.log; then
+            echo "::error::Paper built with unresolved references or citations"
+            grep -nE '\?\?|Citation .* undefined' main.log | head -20
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paper
+          path: reports/LaTeX/main.pdf
