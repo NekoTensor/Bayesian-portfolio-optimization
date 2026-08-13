@@ -344,4 +344,4 @@ so the postmortem can be checked against it.
 
 ## License
 
-[MIT](LICENSE) · Amey Kamble · [ameyk@kgpian.iitkgp.ac.in](mailto:ameyk@kgpian.iitkgp.ac.in)
+[MIT](LICENSE) · NekoTensor · [nekotensor@gmail.com](mailto:nekotensor@gmail.com)
