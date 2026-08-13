@@ -1,0 +1,50 @@
+% Hand-authored prose; all numbers via macros from generated/macros.tex.
+
+This study crossed five belief-formation rules with three allocators over an
+identical feasible set, evaluated all \nTrials{} configurations walk-forward across
+\oosPeriods{} out-of-sample weeks net of costs, and tested each against equal
+weighting with methods robust to the distributional features that real return
+series exhibit.
+
+Three conclusions follow, in decreasing order of confidence.
+
+\begin{enumerate}[noitemsep]
+  \item \textbf{Replacing convex optimisation with Gaussian-process search did not
+  improve risk-adjusted performance}, changing mean Sharpe by \optimiserDelta{}
+  while raising mean turnover from \convexTurnover{} to \gpTurnover{}. Holding the
+  objective and the feasible set fixed, the sophisticated optimiser was the more
+  expensive way to reach the same place.
+  \item \textbf{No configuration separated from the 1/N benchmark}
+  (\nBeatingBenchmark{} of \nStrategies{} at the 5\% level). On this sample the
+  data cannot distinguish these methods from equal weighting.
+  \item \textbf{The choice of estimator moved results less than the choice of
+  allocator objective}, though at $N=\nAssets{}$ and $T=\trainWindow{}$ this
+  design has limited power to detect the estimation-error reduction that shrinkage
+  is built to provide.
+\end{enumerate}
+
+The methodological conclusion is more transferable than any of these. The earlier
+version of this work reported a large, confident, and entirely spurious effect,
+and it did so not through an exotic mistake but through the most ordinary one:
+evaluating a model on the data used to fit it. The infrastructure that prevents it
+--- a rolling-origin split, a shared constraint object, a test that corrupts the
+future and checks the past is unchanged --- amounts to a few hundred lines and
+should be written before any method is, not after a result is in hand.
+
+\paragraph{Future work.} In order of expected value:
+
+\begin{enumerate}[noitemsep]
+  \item \textbf{Widen the universe.} Fifty to a hundred assets would put $N/T$ in
+  the regime where shrinkage estimators are designed to bind, converting the
+  weakest limitation of this study into its central experiment.
+  \item \textbf{Add a factor-model covariance estimator} (statistical or
+  fundamental) as a third point on the estimator axis, since factor structure is
+  the standard industrial answer to covariance estimation at scale.
+  \item \textbf{Extend to multiple asset classes and regimes}, so the
+  out-of-sample window is not a single equity bull market.
+  \item \textbf{Model market impact}, under which the turnover difference between
+  the two optimisers becomes a first-order rather than second-order effect.
+  \item \textbf{Report a full multiple-testing correction across the design}, such
+  as the false discovery rate over the whole configuration grid, rather than
+  deflation of the winner alone.
+\end{enumerate}

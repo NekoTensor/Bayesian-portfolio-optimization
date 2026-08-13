@@ -1,0 +1,60 @@
+% Hand-authored prose. Every numeric value is a macro from generated/macros.tex,
+% which is written from results/ by experiments/make_report_tables.py. Editing a
+% number here is impossible by design -- that is the point.
+
+Table~\ref{tab:metrics} reports out-of-sample performance for all \nTrials{}
+configurations over \oosPeriods{} weeks. The equally weighted benchmark returned
+\benchReturn{} annually at a Sharpe ratio of \benchSharpe{}, with a maximum
+drawdown of \benchDrawdown{} and average turnover of \benchTurnover{}.
+
+The best configuration was \bestName{}, at a Sharpe of \bestSharpe{}. That is
+\bestSharpeGap{} above the benchmark. Across every configuration tried, the total
+spread in Sharpe was \sharpeSpread{}.
+
+Table~\ref{tab:significance} places those differences against their sampling
+variability, and the picture changes completely. The benchmark's own 95\%
+stationary-bootstrap interval runs from \benchCILow{} to \benchCIHigh{}. That is a
+width of \benchCIWidth{} Sharpe units --- \ciSpreadRatio{} times the \emph{entire}
+best-to-worst spread of the study (\sharpeSpread{}), and the widest interval any
+strategy here attains (\widestCI{}); the median is \medianCI{}. The uncertainty
+attaching to a single strategy's Sharpe ratio is therefore several times larger
+than every difference the experiment set out to measure. Of the \nStrategies{}
+optimised configurations,
+\nBeatingBenchmark{} separated from the benchmark at the 5\% level under the
+Ledoit--Wolf studentised bootstrap; the best configuration's difference carried a
+$p$-value of \bestPValue{}.
+
+Figure~\ref{fig:intervals} makes the point visually. The ordering of the point
+estimates is stable enough to tabulate and far too noisy to interpret: the
+intervals overlap almost completely, and a reader shown only the ranking would
+draw conclusions the data do not support.
+
+\paragraph{Reading the factorial.} Figure~\ref{fig:grid} separates the two
+dimensions. Holding the allocator fixed at convex optimisation and varying the
+belief across sample moments, Ledoit--Wolf shrinkage, Bayes--Stein, the
+Normal--Inverse--Wishart predictive and Black--Litterman moves the Sharpe ratio
+very little. Holding the belief fixed and switching the search method from convex
+optimisation to Gaussian-process optimisation --- the like-for-like comparison, on
+an identical objective over an identical feasible set --- changes mean Sharpe by
+\optimiserGap{}, from \convexMeanSharpe{} to \gpMeanSharpe{}.
+
+The two allocators do differ sharply in one respect that the Sharpe ratio hides.
+Mean turnover under convex optimisation was \convexTurnover{}; under
+Gaussian-process search it was \gpTurnover{}. The stochastic surrogate does not
+return to the same weights when the objective barely changes between rebalances,
+so it churns the portfolio without a corresponding gain.
+
+The minimum-variance allocators are a separate and informative case. They ignore
+$\mu$ entirely, and they achieve materially lower volatility and materially lower
+returns than the maximum-Sharpe allocators. Their weaker Sharpe ratios should not
+be read as a failure of the estimators feeding them: they are solving a different
+problem, and their inclusion establishes how much of the maximum-Sharpe result
+depends on the expected-return estimates at all.
+
+\paragraph{Deflation.} The Deflated Sharpe Ratio column of
+Table~\ref{tab:significance} adjusts each result for the fact that \nTrials{}
+configurations were tried and the best one reported. Because every configuration
+run in this study is counted --- including those that lost --- the deflation is
+honest rather than nominal. It is worth stating plainly that had a single
+configuration been run, reported, and the others discarded, the same numbers would
+have looked considerably stronger without being any more true.
